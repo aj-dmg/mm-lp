@@ -471,7 +471,7 @@ const FaqSection: React.FC = () => {
             </div>
         </section>
     )
-});
+};
 
 
 const Footer: React.FC<Pick<NavProps, 'sectionRefs'> & { onAdminLoginClick: () => void }> = ({sectionRefs, onAdminLoginClick}) => {
