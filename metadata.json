@@ -1,0 +1,5 @@
+{
+  "name": "Static | Midnight Madness Party Bus & Coaches",
+  "description": "A web application for the Midnight Madness party bus business that allows customers to view availability and book buses. The admin dashboard supports managing bookings, buses, and drivers, with Google Calendar integration to automatically sync driver schedules.",
+  "requestFramePermissions": []
+}
