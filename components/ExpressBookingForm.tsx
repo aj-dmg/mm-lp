@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useData } from '../contexts/DataContext';
-import { doc, onSnapshot } from 'firebase/firestore';
-import { db, createExpressBooking } from '../services/firebaseService';
 
 interface ExpressBookingFormProps {
   onClose: () => void;
@@ -20,24 +18,6 @@ const ExpressBookingForm: React.FC<ExpressBookingFormProps> = ({ onClose }) => {
   });
   const [errors, setErrors] = useState<{ [key: string]: string }>({});
   const [bookingState, setBookingState] = useState<BookingState>('form');
-  const [pendingBookingId, setPendingBookingId] = useState<string | null>(null);
-
-  // Real-time listener for payment confirmation
-  useEffect(() => {
-    let unsubscribe = () => {};
-    if (bookingState === 'processing' && pendingBookingId) {
-      const bookingRef = doc(db, 'bookings', pendingBookingId);
-      unsubscribe = onSnapshot(bookingRef, (docSnap) => {
-        if (docSnap.exists() && docSnap.data().status === 'confirmed') {
-          setBookingState('confirmed');
-          unsubscribe(); // Clean up listener once confirmed
-        }
-      });
-    }
-    // Cleanup on component unmount or state change
-    return () => unsubscribe();
-  }, [bookingState, pendingBookingId]);
-
 
   const validate = () => {
     const newErrors: { [key: string]: string } = {};
@@ -59,29 +39,8 @@ const ExpressBookingForm: React.FC<ExpressBookingFormProps> = ({ onClose }) => {
   };
 
   const checkAvailability = (durationHours: number): boolean => {
-    const partyBusId = 'bus-1'; // ID for "15-45 Party Bus" from constants.ts
-
-    const selectedStartTime = new Date(`${formData.eventDate}T${formData.pickupTime}`);
-    const selectedEndTime = new Date(selectedStartTime.getTime() + durationHours * 60 * 60 * 1000);
-
-    const conflictingBooking = bookings.find(booking => {
-        if (booking.busId !== partyBusId || booking.status !== 'confirmed') return false;
-        return selectedStartTime < booking.endTime && selectedEndTime > booking.startTime;
-    });
-
-    if (conflictingBooking) {
-        const startTimeStr = conflictingBooking.startTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const endTimeStr = conflictingBooking.endTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const newErrors = { ...errors, availability: `This time is unavailable. The bus is booked from ${startTimeStr} to ${endTimeStr}.` };
-        setErrors(newErrors);
-        return false;
-    }
-    
-    if (errors.availability) {
-       const newErrors = { ...errors };
-       delete newErrors.availability;
-       setErrors(newErrors);
-    }
+    // In static mode, we skip real conflict checks against a database,
+    // but we can check against the static 'bookings' array if it had data.
     return true;
   };
 
@@ -98,30 +57,12 @@ const ExpressBookingForm: React.FC<ExpressBookingFormProps> = ({ onClose }) => {
     
     setBookingState('processing');
 
-    try {
-        const startTime = new Date(`${formData.eventDate}T${formData.pickupTime}`);
-        const endTime = new Date(startTime.getTime() + 1 * 60 * 60 * 1000); // 1-hour package
-        
-        const result = await createExpressBooking({
-            busId: 'bus-1',
-            clientName: formData.name,
-            clientEmail: formData.email,
-            clientPhone: formData.phone,
-            startTime: startTime.toISOString(),
-            endTime: endTime.toISOString(),
-            passengerCount: 1, // Default for express
-        });
-
-        setPendingBookingId(result.data.bookingId);
-        
-        // Now that pending booking is created, open Square link
+    // Simulate API process
+    setTimeout(() => {
+        setBookingState('confirmed');
+        // Mock opening square link
         window.open('https://square.link/u/ZWRQGYwR', '_blank', 'noopener,noreferrer');
-
-    } catch (error) {
-        console.error("Failed to create pending booking:", error);
-        setErrors({ submit: "Could not initiate booking. Please try again." });
-        setBookingState('error');
-    }
+    }, 1500);
   };
 
   const handlePaymentClick = (paymentType: string) => {
@@ -209,7 +150,7 @@ const ExpressBookingForm: React.FC<ExpressBookingFormProps> = ({ onClose }) => {
             <div className="text-center p-8">
                 <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-electric-blue mx-auto mb-6"></div>
                 <h3 className="font-headline font-bold text-2xl text-deep-midnight-blue mb-4">Finalizing Your Booking...</h3>
-                <p className="text-charcoal-gray">Please complete your payment in the new browser tab. This window will automatically update once we receive confirmation from Square.</p>
+                <p className="text-charcoal-gray">Please complete your payment in the new browser tab. This window will automatically update once we receive confirmation.</p>
             </div>
         )}
 

@@ -2,10 +2,6 @@ import React, { useState, useEffect, useRef } from 'react';
 
 type AudiencePath = 'celebrate' | 'wedding' | 'corporate' | null;
 
-interface LandingPageProps {
-  onAdminLoginClick: () => void;
-}
-
 // Custom hook for scroll animations
 const useScrollAnimation = () => {
     useEffect(() => {
@@ -26,7 +22,7 @@ const useScrollAnimation = () => {
 };
 
 // Main LandingPage Component
-const LandingPage: React.FC<LandingPageProps> = ({ onAdminLoginClick }) => {
+const LandingPage: React.FC = () => {
     useScrollAnimation();
     const [activePath, setActivePath] = useState<AudiencePath>(null);
     
@@ -71,7 +67,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAdminLoginClick }) => {
 
     return (
         <div className="bg-white">
-            <StickyNav sectionRefs={sectionRefs} />
+            <StickyNav sectionRefs={sectionRefs} onBookNowClick={handleScrollToQuote} />
             <main>
                 <HeroSection onBookNowClick={handleScrollToQuote} />
                 <ProblemAwarenessSection ref={aboutSectionRef} />
@@ -99,7 +95,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAdminLoginClick }) => {
                     </div>
                 </section>
             </main>
-            <Footer sectionRefs={sectionRefs} onAdminLoginClick={onAdminLoginClick} />
+            <Footer sectionRefs={sectionRefs} />
         </div>
     );
 };
@@ -108,9 +104,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onAdminLoginClick }) => {
 
 interface NavProps {
     sectionRefs: { [key: string]: React.RefObject<HTMLElement> };
+    onBookNowClick: () => void;
 }
 
-const StickyNav: React.FC<NavProps> = ({ sectionRefs }) => {
+const StickyNav: React.FC<NavProps> = ({ sectionRefs, onBookNowClick }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -154,7 +151,7 @@ const StickyNav: React.FC<NavProps> = ({ sectionRefs }) => {
                     ))}
                 </nav>
                 <div className="flex items-center gap-4">
-                    <button onClick={() => scrollToSection(sectionRefs.quote)} className="hidden md:block bg-electric-blue text-white font-headline font-bold text-sm px-7 py-3 rounded-md hover:bg-opacity-80 transform hover:scale-105 transition-all">
+                     <button onClick={onBookNowClick} className="hidden md:block bg-electric-blue text-white font-headline font-bold text-sm px-7 py-3 rounded-md hover:bg-opacity-80 transform hover:scale-105 transition-all">
                         Get Started
                     </button>
                     <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="md:hidden text-white" aria-label="Toggle menu">
@@ -180,7 +177,7 @@ const StickyNav: React.FC<NavProps> = ({ sectionRefs }) => {
                              <button key={item.name} onClick={() => scrollToSection(item.ref)} className="font-sans text-white text-2xl font-medium hover:text-electric-blue transition-colors h-[48px]">{item.name}</button>
                         ))}
                         <div className="mt-8 flex flex-col items-center gap-4">
-                            <button onClick={() => scrollToSection(sectionRefs.quote)} className="w-full bg-electric-blue text-white font-headline font-bold text-lg px-8 py-4 rounded-md hover:bg-opacity-80 transform hover:scale-105 transition-all">
+                            <button onClick={onBookNowClick} className="w-full bg-electric-blue text-white font-headline font-bold text-lg px-8 py-4 rounded-md hover:bg-opacity-80 transform hover:scale-105 transition-all">
                                 Get Started
                             </button>
                         </div>
@@ -471,10 +468,10 @@ const FaqSection: React.FC = () => {
             </div>
         </section>
     )
-};
+});
 
 
-const Footer: React.FC<Pick<NavProps, 'sectionRefs'> & { onAdminLoginClick: () => void }> = ({sectionRefs, onAdminLoginClick}) => {
+const Footer: React.FC<Pick<NavProps, 'sectionRefs'>> = ({sectionRefs}) => {
      const scrollToSection = (ref: React.RefObject<HTMLElement>) => {
         const offset = 80;
         const bodyRect = document.body.getBoundingClientRect().top;
@@ -516,8 +513,6 @@ const Footer: React.FC<Pick<NavProps, 'sectionRefs'> & { onAdminLoginClick: () =
                     <a href="#" className="text-steel-gray text-sm hover:text-electric-blue transition-colors">Privacy Policy</a>
                     <span className="text-steel-gray text-sm">|</span>
                     <a href="#" className="text-steel-gray text-sm hover:text-electric-blue transition-colors">Terms of Service</a>
-                    <span className="text-steel-gray text-sm">|</span>
-                    <button onClick={onAdminLoginClick} className="text-steel-gray text-sm hover:text-electric-blue transition-colors">Admin Login</button>
                 </div>
             </div>
         </footer>

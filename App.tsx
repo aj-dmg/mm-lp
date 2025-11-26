@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import LandingPage from './components/LandingPage';
-import AdminApp from './components/AdminApp';
 import PortalPage from './components/PortalPage';
 import ExpressPortalPage from './components/ExpressPortalPage';
 
@@ -34,7 +33,6 @@ const getRoute = (hash: string): Route => {
 
 
 const App: React.FC = () => {
-    const [isAdminView, setIsAdminView] = useState(false);
     const [route, setRoute] = useState(getRoute(window.location.hash));
 
     useEffect(() => {
@@ -49,32 +47,15 @@ const App: React.FC = () => {
         };
     }, []);
 
-
-    const handleAdminLogin = () => {
-        setIsAdminView(true);
-    };
-
-    const handleBackToCustomerView = () => {
-        setIsAdminView(false);
-        // Navigate back to the landing page by clearing the hash
-        if (window.location.hash !== '') {
-            window.location.hash = '';
-        }
-    };
-
-    if (isAdminView) {
-        return <AdminApp onBackToCustomerView={handleBackToCustomerView} />;
-    }
-    
     switch (route.name) {
         case 'portal':
             // The getRoute function ensures bookingId is present for the 'portal' route
-            return <PortalPage bookingId={route.bookingId!} onAdminLoginClick={handleAdminLogin} />;
+            return <PortalPage bookingId={route.bookingId!} />;
         case 'expressPortal':
-            return <ExpressPortalPage clientSlug={route.clientSlug!} onAdminLoginClick={handleAdminLogin} />;
+            return <ExpressPortalPage clientSlug={route.clientSlug!} />;
         case 'landing':
         default:
-             return <LandingPage onAdminLoginClick={handleAdminLogin} />;
+             return <LandingPage />;
     }
 };
 

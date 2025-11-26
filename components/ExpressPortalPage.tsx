@@ -5,10 +5,9 @@ import { toTitleCase } from '../utils';
 
 interface ExpressPortalPageProps {
     clientSlug: string;
-    onAdminLoginClick: () => void;
 }
 
-const ExpressPortalPage: React.FC<ExpressPortalPageProps> = ({ clientSlug, onAdminLoginClick }) => {
+const ExpressPortalPage: React.FC<ExpressPortalPageProps> = ({ clientSlug }) => {
     const { corporateClients, buses, createBooking, loading } = useData();
     
     const [formData, setFormData] = useState({
@@ -222,7 +221,6 @@ const ExpressPortalPage: React.FC<ExpressPortalPageProps> = ({ clientSlug, onAdm
             </main>
             <footer className="text-center py-6">
                 <p className="text-steel-gray text-sm">&copy; {new Date().getFullYear()} Midnight Madness Party Bus & Coaches.</p>
-                <button onClick={onAdminLoginClick} className="text-steel-gray text-sm hover:text-electric-blue transition-colors">Admin Login</button>
             </footer>
         </div>
     );

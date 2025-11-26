@@ -5,10 +5,9 @@ import { suggestItinerary } from '../services/geminiService';
 
 interface PortalPageProps {
     bookingId: string;
-    onAdminLoginClick: () => void;
 }
 
-const PortalPage: React.FC<PortalPageProps> = ({ bookingId, onAdminLoginClick }) => {
+const PortalPage: React.FC<PortalPageProps> = ({ bookingId }) => {
     const { bookings, buses, drivers, contacts, loading } = useData();
     const [booking, setBooking] = useState<Booking | null>(null);
     const [bus, setBus] = useState<Bus | null>(null);
@@ -191,7 +190,6 @@ const PortalPage: React.FC<PortalPageProps> = ({ bookingId, onAdminLoginClick })
             </main>
              <footer className="text-center py-6">
                 <p className="text-steel-gray text-sm">&copy; {new Date().getFullYear()} Midnight Madness Party Bus & Coaches.</p>
-                <button onClick={onAdminLoginClick} className="text-steel-gray text-sm hover:text-electric-blue transition-colors">Admin Login</button>
             </footer>
         </div>
     );
