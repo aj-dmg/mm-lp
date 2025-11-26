@@ -220,7 +220,7 @@ const HeroSection: React.FC<HeroProps> = ({ onBookNowClick }) => {
                 Your browser does not support the video tag.
             </video>
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(26,35,126,0.6)] to-[rgba(0,0,0,0.8)]"></div>
-            <div className="relative z-10 p-5 flex flex-col items-center">
+            <div className="relative z-10 p-5 flex flex-col items-center w-full">
                 <h1 
                     className={`font-headline font-bold text-[clamp(2.5rem,5vw,4rem)] leading-tight text-shadow-lg transition-all duration-700 ease-out ${isTextVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
                     style={{textShadow: '2px 2px 8px rgba(0,0,0,0.5)', transitionDelay: '0ms'}}
@@ -239,16 +239,31 @@ const HeroSection: React.FC<HeroProps> = ({ onBookNowClick }) => {
                 >
                     Everyone together. Everyone on time. Zero stress. 100% fun.
                 </p>
+                
                 <div 
-                    className={`mt-12 transition-all duration-700 ease-out ${isTextVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
+                    className={`mt-12 w-full max-w-6xl px-4 transition-all duration-700 ease-out ${isTextVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-5'}`}
                     style={{ transitionDelay: '500ms' }}
                 >
-                    <button 
-                        onClick={onBookNowClick}
-                        className="bg-gradient-to-r from-neon-purple to-hot-pink text-white font-headline font-bold py-4 px-12 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-lg inline-block"
-                    >
-                        Book Now
-                    </button>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
+                        <button 
+                            onClick={onBookNowClick}
+                            className="bg-gradient-to-r from-neon-purple to-hot-pink text-white font-headline font-bold py-5 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-sm md:text-base uppercase tracking-wider"
+                        >
+                            Celebrating With Friends?
+                        </button>
+                        <button 
+                            onClick={onBookNowClick}
+                            className="bg-gradient-to-r from-blush-pink to-champagne-gold text-deep-midnight-blue font-headline font-bold py-5 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-sm md:text-base uppercase tracking-wider"
+                        >
+                            Coordinating a Wedding?
+                        </button>
+                        <button 
+                            onClick={onBookNowClick}
+                            className="bg-gradient-to-r from-navy-blue to-steel-gray text-white font-headline font-bold py-5 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-sm md:text-base uppercase tracking-wider"
+                        >
+                            Managing Corporate Groups?
+                        </button>
+                    </div>
                 </div>
             </div>
             <div className="absolute bottom-10 flex flex-col items-center gap-2 animate-bounce">
