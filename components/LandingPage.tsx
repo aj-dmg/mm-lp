@@ -32,6 +32,11 @@ const handleGlobalNavigation = (
         window.location.hash = 'fleet';
         return;
     }
+    
+    if (refKey === 'blog') {
+        window.location.hash = 'blog';
+        return;
+    }
 
     // Special handling for the booking action
     if (anchorId === 'quote' && onBookNowClick) {
@@ -54,105 +59,7 @@ const handleGlobalNavigation = (
     }
 };
 
-// Main LandingPage Component
-const LandingPage: React.FC = () => {
-    useScrollAnimation();
-    const [activePath, setActivePath] = useState<AudiencePath>(null);
-    
-    // Refs for sections
-    const sectionRefs = {
-        fleet: useRef<HTMLElement>(null),
-        events: useRef<HTMLElement>(null),
-        about: useRef<HTMLElement>(null),
-        quote: useRef<HTMLElement>(null),
-    };
-    
-    // Handle hash change scrolling on mount or hash change
-    useEffect(() => {
-        const handleHashScroll = () => {
-            const hash = window.location.hash.replace('#', '');
-            if (!hash || hash === 'fleet') return;
-            
-            const element = document.getElementById(hash);
-            if (element) {
-                setTimeout(() => {
-                   element.scrollIntoView({ behavior: 'smooth' });
-                }, 100);
-            }
-        };
-
-        handleHashScroll();
-    }, []);
-
-    // Load widget script once
-    useEffect(() => {
-        const scriptId = 'mylimobiz-widget-loader';
-        if (!document.getElementById(scriptId)) {
-            const script = document.createElement('script');
-            script.id = scriptId;
-            script.src = "https://book.mylimobiz.com/v4/widgets/widget-loader.js";
-            script.type = "text/javascript";
-            script.async = true;
-            document.body.appendChild(script);
-        }
-    }, []);
-    
-    const handleAudienceSelect = (path: AudiencePath) => {
-        setActivePath(path);
-        // Small timeout to allow render
-        setTimeout(() => {
-            // Find specific section for audience path if needed, or just scroll to the container
-            const element = document.getElementById('audience-paths');
-            if(element) {
-                const offset = 100;
-                const elementPosition = element.getBoundingClientRect().top + window.scrollY;
-                window.scrollTo({ top: elementPosition - offset, behavior: 'smooth' });
-            }
-        }, 50);
-    };
-
-    const scrollToReference = (key: keyof typeof sectionRefs) => {
-        if(sectionRefs[key].current) {
-            sectionRefs[key].current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-    };
-
-    return (
-        <div className="bg-white">
-            <StickyNav sectionRefs={sectionRefs} onBookNowClick={() => scrollToReference('quote')} />
-            <main>
-                <HeroSection onBookNowClick={() => scrollToReference('quote')} />
-                <ProblemAwarenessSection ref={sectionRefs.about} id="about" />
-                <TrustSignalsBar />
-                <AudiencePathsSection id="audience-paths" activePath={activePath} onExplore={() => scrollToReference('quote')} />
-                <DoubleDeckerSection ref={sectionRefs.fleet} id="fleet-section" />
-                <HowItWorksSection ref={sectionRefs.events} id="events" />
-                <FaqSection />
-                <section id="quote" ref={sectionRefs.quote} className="bg-light-gray py-20 md:py-32">
-                    <div className="max-w-[800px] mx-auto text-center px-5">
-                         <div className="bg-white p-8 md:p-12 rounded-2xl shadow-2xl scroll-animate">
-                            <h2 className="font-headline font-bold text-center text-deep-midnight-blue text-[clamp(1.75rem,3.5vw,2.5rem)] mb-8">Ready to Lock In Your Legendary Night</h2>
-                            <div className="flex justify-center">
-                                <a 
-                                    href="https://book.mylimobiz.com/v4/midnightmadness" 
-                                    data-ores-widget="website" 
-                                    data-ores-alias="midnightmadness"
-                                    className="bg-gradient-to-r from-neon-purple to-hot-pink text-white font-headline font-bold py-4 px-12 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-lg inline-block cursor-pointer"
-                                >
-                                    Online Reservations
-                                </a>
-                            </div>
-                            <p className="font-sans text-center text-charcoal-gray/90 text-sm mt-6">(For groups of 15-45 who are ready to roll)</p>
-                        </div>
-                    </div>
-                </section>
-            </main>
-            <Footer sectionRefs={sectionRefs} />
-        </div>
-    );
-};
-
-// --- Sub-components ---
+// --- Sub-components (Defined BEFORE usage to avoid ReferenceError) ---
 
 export interface NavProps {
     sectionRefs?: { [key: string]: React.RefObject<HTMLElement> };
@@ -178,17 +85,24 @@ export const StickyNav: React.FC<NavProps> = ({ sectionRefs, onBookNowClick }) =
         setIsMenuOpen(false);
         handleGlobalNavigation(refKey, anchorId, sectionRefs, onBookNowClick);
     };
+
+    const handleLogoClick = (e: React.MouseEvent) => {
+        e.preventDefault();
+        window.location.hash = '';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
     
     const navItems = [
         { name: 'Fleet', action: () => onNavClick('fleet', 'fleet') },
         { name: 'Events', action: () => onNavClick('events', 'events') },
         { name: 'About', action: () => onNavClick('about', 'about') },
+        { name: 'Blog', action: () => onNavClick('blog', 'blog') },
     ];
 
     return (
         <header className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 ${isScrolled ? 'h-[70px] bg-deep-midnight-blue/95 shadow-lg backdrop-blur-md' : 'h-[80px] bg-deep-midnight-blue/95 md:bg-transparent'}`}>
             <div className="max-w-[1200px] mx-auto px-5 md:px-10 h-full flex justify-between items-center">
-                <a href="/#" className="flex-shrink-0">
+                <a href="#" onClick={handleLogoClick} className="flex-shrink-0">
                     <img src="https://storage.googleapis.com/mm-react-app-videos-photos/Midnight_Madness_logo_white.png" alt="Midnight Madness Logo" className={`transition-all duration-300 ${isScrolled ? 'w-[120px]' : 'w-[150px]'}`} style={{filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.7))'}} />
                 </a>
                 <nav className="hidden md:flex items-center gap-8">
@@ -488,7 +402,9 @@ export const Footer: React.FC<Pick<NavProps, 'sectionRefs'>> = ({sectionRefs}) =
          <footer className="bg-charcoal-gray text-white py-20">
             <div className="max-w-[1200px] mx-auto px-5 md:px-10 grid md:grid-cols-3 gap-12">
                 <div>
-                    <img src="https://storage.googleapis.com/mm-react-app-videos-photos/Midnight_Madness_logo_white.png" alt="Midnight Madness Logo" className="w-[180px] mb-5 drop-shadow-md" />
+                    <a href="#" onClick={(e) => { e.preventDefault(); window.location.hash = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="inline-block mb-5">
+                        <img src="https://storage.googleapis.com/mm-react-app-videos-photos/Midnight_Madness_logo_white.png" alt="Midnight Madness Logo" className="w-[180px] drop-shadow-md" />
+                    </a>
                     <p className="font-sans text-metallic-silver text-sm max-w-xs">Calgary's Premier Double-Decker Party Bus Experience</p>
                 </div>
                 <div>
@@ -496,6 +412,7 @@ export const Footer: React.FC<Pick<NavProps, 'sectionRefs'>> = ({sectionRefs}) =
                     <ul className="space-y-2">
                          <li><button onClick={() => onLinkClick('fleet', 'fleet')} className="text-metallic-silver hover:text-electric-blue transition-colors">Fleet</button></li>
                          <li><button onClick={() => onLinkClick('events', 'events')} className="text-metallic-silver hover:text-electric-blue transition-colors">Events We Serve</button></li>
+                         <li><button onClick={() => onLinkClick('blog', 'blog')} className="text-metallic-silver hover:text-electric-blue transition-colors">Blog</button></li>
                          <li><button onClick={() => onLinkClick('quote', 'quote')} className="text-metallic-silver hover:text-electric-blue transition-colors">Book Now</button></li>
                     </ul>
                 </div>
@@ -516,6 +433,104 @@ export const Footer: React.FC<Pick<NavProps, 'sectionRefs'>> = ({sectionRefs}) =
                 </div>
             </div>
         </footer>
+    );
+};
+
+// Main LandingPage Component
+const LandingPage: React.FC = () => {
+    useScrollAnimation();
+    const [activePath, setActivePath] = useState<AudiencePath>(null);
+    
+    // Refs for sections
+    const sectionRefs = {
+        fleet: useRef<HTMLElement>(null),
+        events: useRef<HTMLElement>(null),
+        about: useRef<HTMLElement>(null),
+        quote: useRef<HTMLElement>(null),
+    };
+    
+    // Handle hash change scrolling on mount or hash change
+    useEffect(() => {
+        const handleHashScroll = () => {
+            const hash = window.location.hash.replace('#', '');
+            if (!hash || hash === 'fleet' || hash === 'blog') return;
+            
+            const element = document.getElementById(hash);
+            if (element) {
+                setTimeout(() => {
+                   element.scrollIntoView({ behavior: 'smooth' });
+                }, 100);
+            }
+        };
+
+        handleHashScroll();
+    }, []);
+
+    // Load widget script once
+    useEffect(() => {
+        const scriptId = 'mylimobiz-widget-loader';
+        if (!document.getElementById(scriptId)) {
+            const script = document.createElement('script');
+            script.id = scriptId;
+            script.src = "https://book.mylimobiz.com/v4/widgets/widget-loader.js";
+            script.type = "text/javascript";
+            script.async = true;
+            document.body.appendChild(script);
+        }
+    }, []);
+    
+    const handleAudienceSelect = (path: AudiencePath) => {
+        setActivePath(path);
+        // Small timeout to allow render
+        setTimeout(() => {
+            // Find specific section for audience path if needed, or just scroll to the container
+            const element = document.getElementById('audience-paths');
+            if(element) {
+                const offset = 100;
+                const elementPosition = element.getBoundingClientRect().top + window.scrollY;
+                window.scrollTo({ top: elementPosition - offset, behavior: 'smooth' });
+            }
+        }, 50);
+    };
+
+    const scrollToReference = (key: keyof typeof sectionRefs) => {
+        if(sectionRefs[key].current) {
+            sectionRefs[key].current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
+    return (
+        <div className="bg-white">
+            <StickyNav sectionRefs={sectionRefs} onBookNowClick={() => scrollToReference('quote')} />
+            <main>
+                <HeroSection onBookNowClick={() => scrollToReference('quote')} />
+                <ProblemAwarenessSection ref={sectionRefs.about} id="about" />
+                <TrustSignalsBar />
+                <AudiencePathsSection id="audience-paths" activePath={activePath} onExplore={() => scrollToReference('quote')} />
+                <DoubleDeckerSection ref={sectionRefs.fleet} id="fleet-section" />
+                <HowItWorksSection ref={sectionRefs.events} id="events" />
+                <FaqSection />
+                <section id="quote" ref={sectionRefs.quote} className="bg-light-gray py-20 md:py-32">
+                    <div className="max-w-[800px] mx-auto text-center px-5">
+                         <div className="bg-white p-8 md:p-12 rounded-2xl shadow-2xl scroll-animate">
+                            <h2 className="font-headline font-bold text-center text-deep-midnight-blue text-[clamp(1.75rem,3.5vw,2.5rem)] mb-8">Ready to Lock In Your Legendary Night</h2>
+                            <div className="flex justify-center">
+                                <a 
+                                    href="https://book.mylimobiz.com/v4/midnightmadness" 
+                                    data-ores-widget="website" 
+                                    data-ores-alias="midnightmadness"
+                                    className="bg-gradient-to-r from-neon-purple to-hot-pink text-white font-headline font-bold py-4 px-12 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-lg inline-block cursor-pointer"
+                                >
+                                    Online Reservations
+                                </a>
+                            </div>
+                            <p className="font-sans text-center text-charcoal-gray/90 text-sm mt-6">(For groups of 15-45 who are ready to roll)</p>
+                        </div>
+                    </div>
+                </section>
+            </main>
+            <Footer sectionRefs={sectionRefs} />
+        </div>
     );
 };
 

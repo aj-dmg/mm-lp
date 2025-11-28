@@ -1,5 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { StickyNav, Footer } from './LandingPage';
+import { StickyNav, Footer } from './LandingPage.tsx';
 
 interface TeliportMeEmbedProps {
     url: string;
