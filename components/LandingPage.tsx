@@ -64,9 +64,10 @@ const handleGlobalNavigation = (
 export interface NavProps {
     sectionRefs?: { [key: string]: React.RefObject<HTMLElement> };
     onBookNowClick?: () => void;
+    forceSolidBackground?: boolean;
 }
 
-export const StickyNav: React.FC<NavProps> = ({ sectionRefs, onBookNowClick }) => {
+export const StickyNav: React.FC<NavProps> = ({ sectionRefs, onBookNowClick, forceSolidBackground = false }) => {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -99,11 +100,13 @@ export const StickyNav: React.FC<NavProps> = ({ sectionRefs, onBookNowClick }) =
         { name: 'Blog', action: () => onNavClick('blog', 'blog') },
     ];
 
+    const showSolid = isScrolled || forceSolidBackground;
+
     return (
-        <header className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 ${isScrolled ? 'h-[70px] bg-deep-midnight-blue/95 shadow-lg backdrop-blur-md' : 'h-[80px] bg-deep-midnight-blue/95 md:bg-transparent'}`}>
+        <header className={`fixed top-0 left-0 right-0 z-[1000] transition-all duration-300 ${showSolid ? 'h-[70px] bg-deep-midnight-blue/95 shadow-lg backdrop-blur-md' : 'h-[80px] bg-deep-midnight-blue/95 md:bg-transparent'}`}>
             <div className="max-w-[1200px] mx-auto px-5 md:px-10 h-full flex justify-between items-center">
                 <a href="#" onClick={handleLogoClick} className="flex-shrink-0">
-                    <img src="https://storage.googleapis.com/mm-react-app-videos-photos/Midnight_Madness_logo_white.png" alt="Midnight Madness Logo" className={`transition-all duration-300 ${isScrolled ? 'w-[120px]' : 'w-[150px]'}`} style={{filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.7))'}} />
+                    <img src="https://storage.googleapis.com/mm-react-app-videos-photos/Midnight_Madness_logo_white.png" alt="Midnight Madness Logo" className={`transition-all duration-300 ${showSolid ? 'w-[120px]' : 'w-[150px]'}`} style={{filter: 'drop-shadow(1px 1px 2px rgba(0,0,0,0.7))'}} />
                 </a>
                 <nav className="hidden md:flex items-center gap-8">
                     {navItems.map(item => (

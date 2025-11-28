@@ -99,7 +99,7 @@ const BlogPage: React.FC<BlogPageProps> = ({ slug }) => {
 
     return (
         <div className="bg-white min-h-screen flex flex-col font-sans">
-            <StickyNav />
+            <StickyNav forceSolidBackground={true} />
             
             <main className="flex-grow pt-[100px] pb-20">
                 {activePost ? (

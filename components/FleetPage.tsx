@@ -43,7 +43,7 @@ const FleetPage: React.FC = () => {
 
     return (
         <div className="bg-white min-h-screen flex flex-col">
-            <StickyNav />
+            <StickyNav forceSolidBackground={true} />
             
             <main className="flex-grow pt-[100px] pb-20">
                 <section className="max-w-[1200px] mx-auto px-5 md:px-10 mb-20">
