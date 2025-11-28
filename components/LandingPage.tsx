@@ -55,6 +55,7 @@ const handleGlobalNavigation = (
         });
     } else {
         // Fallback or external page navigation
+        // If we are already on the page but just need to scroll, we handle via hash change or ref check
         window.location.href = `/#${anchorId}`;
     }
 };
@@ -94,7 +95,7 @@ export const StickyNav: React.FC<NavProps> = ({ sectionRefs, onBookNowClick, for
     };
     
     const navItems = [
-        { name: 'Fleet', action: () => onNavClick('fleet', 'fleet') },
+        { name: 'Our Buses', action: () => onNavClick('fleet', 'fleet') },
         { name: 'Events', action: () => onNavClick('events', 'events') },
         { name: 'About', action: () => onNavClick('about', 'about') },
         { name: 'Blog', action: () => onNavClick('blog', 'blog') },
@@ -143,14 +144,15 @@ export const StickyNav: React.FC<NavProps> = ({ sectionRefs, onBookNowClick, for
 };
 
 interface HeroProps {
-    onBookNowClick: () => void;
+    onAudienceSelect: (path: AudiencePath) => void;
 }
 
-const HeroSection: React.FC<HeroProps> = ({ onBookNowClick }) => {
+const HeroSection: React.FC<HeroProps> = ({ onAudienceSelect }) => {
     const [isTextVisible, setIsTextVisible] = useState(false);
 
     useEffect(() => {
-        const timer = setTimeout(() => setIsTextVisible(true), 300);
+        // 25 second delay as requested
+        const timer = setTimeout(() => setIsTextVisible(true), 25000);
         return () => clearTimeout(timer);
     }, []);
     
@@ -181,13 +183,13 @@ const HeroSection: React.FC<HeroProps> = ({ onBookNowClick }) => {
                 <div className="mt-12 w-full max-w-6xl px-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 w-full">
                         {[
-                            { text: "Celebrating With Friends?", colors: "from-neon-purple to-hot-pink" },
-                            { text: "Coordinating a Wedding?", colors: "from-blush-pink to-champagne-gold text-deep-midnight-blue" },
-                            { text: "Managing Corporate Groups?", colors: "from-navy-blue to-steel-gray" }
+                            { text: "Celebrating With Friends?", colors: "from-neon-purple to-hot-pink", path: 'celebrate' as const },
+                            { text: "Coordinating a Wedding?", colors: "from-blush-pink to-champagne-gold text-deep-midnight-blue", path: 'wedding' as const },
+                            { text: "Managing Corporate Groups?", colors: "from-navy-blue to-steel-gray", path: 'corporate' as const }
                         ].map((btn, idx) => (
                              <button 
                                 key={idx}
-                                onClick={onBookNowClick}
+                                onClick={() => onAudienceSelect(btn.path)}
                                 className={`bg-gradient-to-r ${btn.colors} text-white font-headline font-bold py-5 px-4 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-sm md:text-base uppercase tracking-wider`}
                             >
                                 {btn.text}
@@ -413,7 +415,7 @@ export const Footer: React.FC<Pick<NavProps, 'sectionRefs'>> = ({sectionRefs}) =
                 <div>
                     <h4 className="font-headline font-bold text-lg mb-4">Quick Links</h4>
                     <ul className="space-y-2">
-                         <li><button onClick={() => onLinkClick('fleet', 'fleet')} className="text-metallic-silver hover:text-electric-blue transition-colors">Fleet</button></li>
+                         <li><button onClick={() => onLinkClick('fleet', 'fleet')} className="text-metallic-silver hover:text-electric-blue transition-colors">Our Buses</button></li>
                          <li><button onClick={() => onLinkClick('events', 'events')} className="text-metallic-silver hover:text-electric-blue transition-colors">Events We Serve</button></li>
                          <li><button onClick={() => onLinkClick('blog', 'blog')} className="text-metallic-silver hover:text-electric-blue transition-colors">Blog</button></li>
                          <li><button onClick={() => onLinkClick('quote', 'quote')} className="text-metallic-silver hover:text-electric-blue transition-colors">Book Now</button></li>
@@ -455,8 +457,8 @@ const LandingPage: React.FC = () => {
     // Handle hash change scrolling on mount or hash change
     useEffect(() => {
         const handleHashScroll = () => {
-            const hash = window.location.hash.replace('#', '');
-            if (!hash || hash === 'fleet' || hash === 'blog') return;
+            const hash = window.location.hash.replace(/^#/, '');
+            if (!hash || hash.startsWith('fleet') || hash.startsWith('blog')) return;
             
             const element = document.getElementById(hash);
             if (element) {
@@ -506,7 +508,7 @@ const LandingPage: React.FC = () => {
         <div className="bg-white">
             <StickyNav sectionRefs={sectionRefs} onBookNowClick={() => scrollToReference('quote')} />
             <main>
-                <HeroSection onBookNowClick={() => scrollToReference('quote')} />
+                <HeroSection onAudienceSelect={handleAudienceSelect} />
                 <ProblemAwarenessSection ref={sectionRefs.about} id="about" />
                 <TrustSignalsBar />
                 <AudiencePathsSection id="audience-paths" activePath={activePath} onExplore={() => scrollToReference('quote')} />

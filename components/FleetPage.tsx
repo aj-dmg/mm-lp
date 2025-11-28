@@ -48,7 +48,7 @@ const FleetPage: React.FC = () => {
             <main className="flex-grow pt-[100px] pb-20">
                 <section className="max-w-[1200px] mx-auto px-5 md:px-10 mb-20">
                     <div className="text-center mb-12">
-                        <h1 className="font-headline font-bold text-deep-midnight-blue text-[clamp(2.5rem,5vw,4rem)] mb-4">Our Fleet</h1>
+                        <h1 className="font-headline font-bold text-deep-midnight-blue text-[clamp(2.5rem,5vw,4rem)] mb-4">Our Buses</h1>
                         <p className="font-sans text-xl text-charcoal-gray max-w-3xl mx-auto">Experience the ultimate party atmosphere before you even book.</p>
                     </div>
 

@@ -10,30 +10,54 @@ interface Route {
 }
 
 const getRoute = (hash: string): Route => {
-    // Remove the leading '#'
-    const path = hash.substring(1);
-    const parts = path.split('/');
+    // Explicitly handle empty hash or just '#' to ensure Landing Page defaults
+    if (!hash || hash === '#') {
+        return { name: 'landing' };
+    }
+
+    // Robustly remove leading # and any slash
+    const cleanHash = hash.replace(/^#\/?/, '');
     
-    if (parts[0] === 'fleet') {
+    // If cleanHash is empty (e.g. from '#/'), return landing
+    if (!cleanHash) {
+        return { name: 'landing' };
+    }
+
+    const parts = cleanHash.split('/');
+    const mainPath = parts[0]?.toLowerCase(); // Case-insensitive check
+
+    if (mainPath === 'fleet') {
         return { name: 'fleet' };
     }
     
-    if (parts[0] === 'blog') {
+    if (mainPath === 'blog') {
         return { 
             name: 'blog',
             params: parts[1] ? { slug: parts[1] } : undefined
         };
     }
 
-    // Default route for anything else (e.g., '', '#', '/#/')
+    // Default route for anything else
     return { name: 'landing' };
 };
 
 
 const App: React.FC = () => {
-    const [route, setRoute] = useState(getRoute(window.location.hash));
+    // Force 'landing' state on initialization, regardless of current window.location.hash
+    // This ensures reloads always start at the Landing Page as requested.
+    const [route, setRoute] = useState<Route>({ name: 'landing' });
 
     useEffect(() => {
+        // On mount, if there is a hash, clear it so the URL matches the Landing Page view.
+        // This prevents a mismatch where URL says #blog but page shows Landing.
+        if (window.location.hash && window.location.hash !== '#') {
+             try {
+                window.history.replaceState(null, '', window.location.pathname);
+             } catch (e) {
+                console.warn('Failed to clear hash:', e);
+             }
+        }
+
         const handleHashChange = () => {
             setRoute(getRoute(window.location.hash));
         };
