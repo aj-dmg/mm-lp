@@ -6,30 +6,17 @@ interface TeliportMeEmbedProps {
 }
 
 const TeliportMeEmbed: React.FC<TeliportMeEmbedProps> = React.memo(({ url }) => {
-    const containerRef = useRef<HTMLDivElement>(null);
-
-    useEffect(() => {
-        if (!containerRef.current) return;
-        
-        // Check if script already exists to avoid duplication issues
-        if (containerRef.current.querySelector('script')) return;
-
-        const script = document.createElement('script');
-        script.src = "https://teliportme.com/js/embed.js";
-        script.setAttribute('data-teliportme', url);
-        script.setAttribute('data-height', '100%');
-        script.setAttribute('data-width', '100%');
-        
-        containerRef.current.appendChild(script);
-
-        return () => {
-            // Cleanup intentionally left blank or specific to library needs
-            // Removing script might not remove iframe injected by library
-        };
-    }, [url]);
-
+    // Using iframe directly is more robust for React than injecting scripts that modify DOM
     return (
-        <div ref={containerRef} className="w-full h-[500px] md:h-[700px] rounded-xl overflow-hidden shadow-2xl bg-charcoal-gray" />
+        <div className="w-full h-[500px] md:h-[700px] rounded-xl overflow-hidden shadow-2xl bg-charcoal-gray">
+            <iframe 
+                src={url} 
+                className="w-full h-full border-0" 
+                allowFullScreen 
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture; xr-spatial-tracking"
+                title="Virtual Tour"
+            />
+        </div>
     );
 });
 
@@ -56,7 +43,7 @@ const FleetPage: React.FC = () => {
                     <div className="mb-24">
                         <h2 className="font-headline font-bold text-3xl text-deep-midnight-blue mb-6 border-l-4 border-neon-purple pl-4">Double-Decker Party Bus</h2>
                         <div className="relative">
-                            <TeliportMeEmbed url="https://teliportme.com/embed/tour/4d50c608" />
+                            <TeliportMeEmbed url="https://teliportme.com/embed/tour/4a5200b2" />
                         </div>
                          <div className="mt-6 flex flex-wrap gap-4 justify-center">
                             {featuresDoubleDecker.map((feature, i) => (

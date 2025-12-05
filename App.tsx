@@ -52,7 +52,10 @@ const App: React.FC = () => {
         // This prevents a mismatch where URL says #blog but page shows Landing.
         if (window.location.hash && window.location.hash !== '#') {
              try {
-                window.history.replaceState(null, '', window.location.pathname);
+                // Use a simpler approach for history clearing to avoid errors in strict mode
+                if (window.history && window.history.replaceState) {
+                    window.history.replaceState(null, '', window.location.pathname);
+                }
              } catch (e) {
                 console.warn('Failed to clear hash:', e);
              }

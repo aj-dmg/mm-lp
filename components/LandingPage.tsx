@@ -28,8 +28,16 @@ const handleGlobalNavigation = (
     sectionRefs?: { [key: string]: React.RefObject<HTMLElement> },
     onBookNowClick?: () => void
 ) => {
+    // Explicit navigation to Fleet Page
     if (refKey === 'fleet') {
-        window.location.hash = 'fleet';
+        const currentHash = window.location.hash.replace(/^#\/?/, '');
+        // If we are already on the fleet page, just scroll to top
+        if (currentHash === 'fleet') {
+             window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+             // Otherwise navigate to it
+             window.location.hash = 'fleet';
+        }
         return;
     }
     
@@ -260,22 +268,15 @@ const TrustSignalsBar: React.FC = () => (
 const AudiencePathsSection: React.FC<{ id?: string; activePath: AudiencePath; onExplore: () => void; }> = ({ id, activePath, onExplore }) => {
     if (!activePath) return <div id={id}></div>;
 
-    const paths: Record<NonNullable<AudiencePath>, {
-        accentGradient: string;
-        borderColor: string;
-        image: string;
-        headline: string;
-        subheadline: string;
-        ctaText: string;
-        headlineFont?: string;
-    }> = {
+    const paths = {
         celebrate: {
             accentGradient: 'from-neon-purple to-hot-pink',
             borderColor: 'border-neon-purple',
             image: 'https://images.pexels.com/photos/1190298/pexels-photo-1190298.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
             headline: "What Would Your Celebration Look Like If Nobody Had to Worry About Transportation?",
             subheadline: "Imagine this: Everyone shows up. Everyone stays. Everyone gets home safely. No designated drivers missing out. No group texts at 2am asking who's driving.",
-            ctaText: "EXPLORE YOUR OPTIONS"
+            ctaText: "EXPLORE YOUR OPTIONS",
+            headlineFont: undefined
         },
         wedding: {
             accentGradient: 'from-blush-pink to-champagne-gold',
@@ -292,10 +293,14 @@ const AudiencePathsSection: React.FC<{ id?: string; activePath: AudiencePath; on
             image: 'https://images.pexels.com/photos/3184418/pexels-photo-3184418.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2',
             headline: "How Do You Transport 50 Employees Without the Liability Headache?",
             subheadline: "If you're coordinating your company's next event, you're probably not excited about the transportation logistics. Let's fix that.",
-            ctaText: "DISCUSS YOUR EVENT"
+            ctaText: "DISCUSS YOUR EVENT",
+            headlineFont: undefined
         }
-    }
-    const currentPath = paths[activePath];
+    };
+    
+    // Safety check to ensure the path exists in our map
+    const currentPath = activePath in paths ? paths[activePath] : null;
+    if (!currentPath) return null;
 
     return (
         <section id={id} className={`bg-white py-16 md:py-24 border-t-4 ${currentPath.borderColor} transition-all duration-500 animate-fade-in-up`}>
@@ -424,8 +429,8 @@ export const Footer: React.FC<Pick<NavProps, 'sectionRefs'>> = ({sectionRefs}) =
                 <div>
                     <h4 className="font-headline font-bold text-lg mb-4">Stay Connected</h4>
                     <div className="flex items-center gap-4">
-                        <a href="#" aria-label="Instagram" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-electric-blue transition-all"><i className="fab fa-instagram"></i></a>
-                        <a href="#" aria-label="Facebook" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-electric-blue transition-all"><i className="fab fa-facebook-f"></i></a>
+                        <a href="https://www.instagram.com/midnight.madness.yyc/" target="_blank" rel="noopener noreferrer" aria-label="Instagram" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-electric-blue transition-all"><i className="fab fa-instagram"></i></a>
+                        <a href="https://www.facebook.com/MidnightMadnessclubcrawls/" target="_blank" rel="noopener noreferrer" aria-label="Facebook" className="w-10 h-10 bg-white/10 rounded-full flex items-center justify-center hover:bg-electric-blue transition-all"><i className="fab fa-facebook-f"></i></a>
                     </div>
                 </div>
             </div>
@@ -475,12 +480,17 @@ const LandingPage: React.FC = () => {
     useEffect(() => {
         const scriptId = 'mylimobiz-widget-loader';
         if (!document.getElementById(scriptId)) {
-            const script = document.createElement('script');
-            script.id = scriptId;
-            script.src = "https://book.mylimobiz.com/v4/widgets/widget-loader.js";
-            script.type = "text/javascript";
-            script.async = true;
-            document.body.appendChild(script);
+            try {
+                const script = document.createElement('script');
+                script.id = scriptId;
+                script.src = "https://book.mylimobiz.com/v4/widgets/widget-loader.js";
+                script.type = "text/javascript";
+                script.async = true;
+                script.crossOrigin = "anonymous"; // Try to avoid generic Script Error
+                document.body.appendChild(script);
+            } catch (e) {
+                console.warn("Failed to inject widget script", e);
+            }
         }
     }, []);
     
@@ -524,6 +534,8 @@ const LandingPage: React.FC = () => {
                                     href="https://book.mylimobiz.com/v4/midnightmadness" 
                                     data-ores-widget="website" 
                                     data-ores-alias="midnightmadness"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
                                     className="bg-gradient-to-r from-neon-purple to-hot-pink text-white font-headline font-bold py-4 px-12 rounded-lg shadow-lg hover:shadow-xl transform hover:-translate-y-1 transition-all duration-300 text-lg inline-block cursor-pointer"
                                 >
                                     Online Reservations
