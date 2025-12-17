@@ -59,14 +59,12 @@ const App: React.FC = () => {
             }
         }
 
+        // Fix: Use simple hash clearing instead of replaceState.
+        // replaceState causes DOMExceptions in blob/sandboxed environments.
+        // Clearing the hash ensures that if the user clicks "Our Buses" (which is #fleet),
+        // the hash change event will fire properly even if the page was reloaded.
         if (window.location.hash && window.location.hash !== '#') {
-             try {
-                if (window.history && window.history.replaceState) {
-                    window.history.replaceState(null, '', window.location.pathname);
-                }
-             } catch (e) {
-                console.warn('Failed to clear hash:', e);
-             }
+             window.location.hash = '';
         }
 
         const handleHashChange = () => {
