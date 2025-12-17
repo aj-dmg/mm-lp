@@ -174,9 +174,9 @@ const HeroSection: React.FC<HeroProps> = ({ onAudienceSelect }) => {
                 <source src="https://storage.googleapis.com/mm-react-app-videos-photos/MM-Montage-720p-70.mp4" type="video/mp4" />
             </video>
             <div className="absolute inset-0 bg-gradient-to-b from-[rgba(26,35,126,0.6)] to-[rgba(0,0,0,0.8)]"></div>
-            <div className={`relative z-10 p-5 flex flex-col items-center w-full transition-all duration-1000 ease-out ${isTextVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
+            <div className={`relative z-10 p-5 pt-40 md:pt-5 flex flex-col items-center w-full transition-all duration-1000 ease-out ${isTextVisible ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}>
                 <h1 className="font-headline font-bold text-[clamp(2.5rem,5vw,4rem)] leading-tight text-shadow-lg drop-shadow-md">
-                    Your Event. Your Ride. Unforgettable Memories.
+                    Your Event. <br className="md:hidden" />Your Ride. <br className="md:hidden" />Unforgettable Memories.
                 </h1>
                 <p className="font-sans font-medium text-[clamp(1.125rem,2.5vw,1.5rem)] text-light-gray max-w-[700px] mt-4 drop-shadow-sm">
                     With Midnight Madness, your travel time is party time. The experience begins the second you and your crew step onboard. 
