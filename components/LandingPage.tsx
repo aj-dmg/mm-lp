@@ -29,26 +29,32 @@ const handleGlobalNavigation = (
     sectionRefs?: { [key: string]: React.RefObject<HTMLElement> },
     onBookNowClick?: () => void
 ) => {
+    // Explicitly handle the Fleet Page route
     if (refKey === 'fleet') {
         const currentHash = window.location.hash.replace(/^#\/?/, '');
+        // If we are already on the fleet page (hash is #fleet), just scroll to top
         if (currentHash === 'fleet') {
              window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
+             // Triggers the App router to switch views
              window.location.hash = 'fleet';
         }
         return;
     }
     
+    // Explicitly handle Blog route
     if (refKey === 'blog') {
         window.location.hash = 'blog';
         return;
     }
 
+    // Handle Book Now / Quote actions
     if (anchorId === 'quote' && onBookNowClick) {
         onBookNowClick();
         return;
     }
 
+    // Handle smooth scrolling to sections on the current page
     if (sectionRefs && sectionRefs[refKey]?.current) {
         const offset = 80;
         const elementPosition = sectionRefs[refKey].current!.getBoundingClientRect().top + window.scrollY;
@@ -58,6 +64,7 @@ const handleGlobalNavigation = (
             behavior: 'smooth'
         });
     } else {
+        // Fallback for cross-page navigation to anchors
         window.location.href = `/#${anchorId}`;
     }
 };
@@ -439,8 +446,10 @@ const LandingPage: React.FC = () => {
     useScrollAnimation();
     const [activePath, setActivePath] = useState<AudiencePath>(null);
     
+    // We rename the ref key from 'fleet' to 'fleetSection' so that it doesn't collide 
+    // with the 'fleet' navigation key which is used for the separate Fleet Page.
     const sectionRefs = {
-        fleet: useRef<HTMLElement>(null),
+        fleetSection: useRef<HTMLElement>(null), 
         events: useRef<HTMLElement>(null),
         about: useRef<HTMLElement>(null),
         quote: useRef<HTMLElement>(null),
@@ -449,6 +458,7 @@ const LandingPage: React.FC = () => {
     useEffect(() => {
         const handleHashScroll = () => {
             const hash = window.location.hash.replace(/^#/, '');
+            // Do not scroll if we are navigating to fleet or blog pages
             if (!hash || hash.startsWith('fleet') || hash.startsWith('blog')) return;
             
             const element = document.getElementById(hash);
@@ -488,7 +498,7 @@ const LandingPage: React.FC = () => {
                 <ProblemAwarenessSection ref={sectionRefs.about} id="about" />
                 <TrustSignalsBar />
                 <AudiencePathsSection id="audience-paths" activePath={activePath} onExplore={() => scrollToReference('quote')} />
-                <DoubleDeckerSection ref={sectionRefs.fleet} id="fleet-section" />
+                <DoubleDeckerSection ref={sectionRefs.fleetSection} id="fleet-section" />
                 <HowItWorksSection ref={sectionRefs.events} id="events" />
                 <FaqSection />
                 <section id="quote" ref={sectionRefs.quote} className="bg-light-gray py-20 md:py-32">
