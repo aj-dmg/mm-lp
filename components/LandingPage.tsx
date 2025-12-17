@@ -405,7 +405,7 @@ export const Footer: React.FC<Pick<NavProps, 'sectionRefs'>> = ({sectionRefs}) =
     };
 
     return (
-         <footer className="bg-charcoal-gray text-white py-20">
+         <footer className="bg-black text-white py-20">
             <div className="max-w-[1200px] mx-auto px-5 md:px-10 grid md:grid-cols-3 gap-12">
                 <div>
                     <a href="#" onClick={(e) => { e.preventDefault(); window.location.hash = ''; window.scrollTo({ top: 0, behavior: 'smooth' }); }} className="inline-block mb-5">
