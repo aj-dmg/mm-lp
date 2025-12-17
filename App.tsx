@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import LandingPage from './components/LandingPage.tsx';
 import FleetPage from './components/FleetPage.tsx';
@@ -10,21 +11,18 @@ interface Route {
 }
 
 const getRoute = (hash: string): Route => {
-    // Explicitly handle empty hash or just '#' to ensure Landing Page defaults
     if (!hash || hash === '#') {
         return { name: 'landing' };
     }
 
-    // Robustly remove leading # and any slash
     const cleanHash = hash.replace(/^#\/?/, '');
     
-    // If cleanHash is empty (e.g. from '#/'), return landing
     if (!cleanHash) {
         return { name: 'landing' };
     }
 
     const parts = cleanHash.split('/');
-    const mainPath = parts[0]?.toLowerCase(); // Case-insensitive check
+    const mainPath = parts[0]?.toLowerCase();
 
     if (mainPath === 'fleet') {
         return { name: 'fleet' };
@@ -37,22 +35,32 @@ const getRoute = (hash: string): Route => {
         };
     }
 
-    // Default route for anything else
     return { name: 'landing' };
 };
 
 
 const App: React.FC = () => {
-    // Force 'landing' state on initialization, regardless of current window.location.hash
-    // This ensures reloads always start at the Landing Page as requested.
     const [route, setRoute] = useState<Route>({ name: 'landing' });
 
     useEffect(() => {
-        // On mount, if there is a hash, clear it so the URL matches the Landing Page view.
-        // This prevents a mismatch where URL says #blog but page shows Landing.
+        // Global Script Initialization for Limo Anywhere
+        const scriptId = 'mylimobiz-widget-loader';
+        if (!document.getElementById(scriptId)) {
+            try {
+                const script = document.createElement('script');
+                script.id = scriptId;
+                script.src = "https://book.mylimobiz.com/v4/widgets/widget-loader.js";
+                script.type = "text/javascript";
+                script.async = true;
+                script.crossOrigin = "anonymous";
+                document.body.appendChild(script);
+            } catch (e) {
+                console.warn("Failed to inject global widget script", e);
+            }
+        }
+
         if (window.location.hash && window.location.hash !== '#') {
              try {
-                // Use a simpler approach for history clearing to avoid errors in strict mode
                 if (window.history && window.history.replaceState) {
                     window.history.replaceState(null, '', window.location.pathname);
                 }

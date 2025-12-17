@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect, useRef } from 'react';
 
 type AudiencePath = 'celebrate' | 'wedding' | 'corporate' | null;
@@ -28,14 +29,11 @@ const handleGlobalNavigation = (
     sectionRefs?: { [key: string]: React.RefObject<HTMLElement> },
     onBookNowClick?: () => void
 ) => {
-    // Explicit navigation to Fleet Page
     if (refKey === 'fleet') {
         const currentHash = window.location.hash.replace(/^#\/?/, '');
-        // If we are already on the fleet page, just scroll to top
         if (currentHash === 'fleet') {
              window.scrollTo({ top: 0, behavior: 'smooth' });
         } else {
-             // Otherwise navigate to it
              window.location.hash = 'fleet';
         }
         return;
@@ -46,15 +44,13 @@ const handleGlobalNavigation = (
         return;
     }
 
-    // Special handling for the booking action
     if (anchorId === 'quote' && onBookNowClick) {
         onBookNowClick();
         return;
     }
 
-    // If we are on the landing page and have refs
     if (sectionRefs && sectionRefs[refKey]?.current) {
-        const offset = 80; // height of nav
+        const offset = 80;
         const elementPosition = sectionRefs[refKey].current!.getBoundingClientRect().top + window.scrollY;
         
         window.scrollTo({
@@ -62,13 +58,9 @@ const handleGlobalNavigation = (
             behavior: 'smooth'
         });
     } else {
-        // Fallback or external page navigation
-        // If we are already on the page but just need to scroll, we handle via hash change or ref check
         window.location.href = `/#${anchorId}`;
     }
 };
-
-// --- Sub-components (Defined BEFORE usage to avoid ReferenceError) ---
 
 export interface NavProps {
     sectionRefs?: { [key: string]: React.RefObject<HTMLElement> };
@@ -131,7 +123,6 @@ export const StickyNav: React.FC<NavProps> = ({ sectionRefs, onBookNowClick, for
                     </button>
                 </div>
             </div>
-             {/* Mobile Menu */}
             <div className={`fixed inset-0 bg-deep-midnight-blue transform ${isMenuOpen ? 'translate-x-0' : 'translate-x-full'} transition-transform duration-300 ease-in-out md:hidden flex flex-col p-5 z-[999]`}>
                 <div className="flex justify-end mb-8">
                      <button onClick={() => setIsMenuOpen(false)} className="text-white">
@@ -159,7 +150,6 @@ const HeroSection: React.FC<HeroProps> = ({ onAudienceSelect }) => {
     const [isTextVisible, setIsTextVisible] = useState(false);
 
     useEffect(() => {
-        // 25 second delay as requested
         const timer = setTimeout(() => setIsTextVisible(true), 25000);
         return () => clearTimeout(timer);
     }, []);
@@ -298,7 +288,6 @@ const AudiencePathsSection: React.FC<{ id?: string; activePath: AudiencePath; on
         }
     };
     
-    // Safety check to ensure the path exists in our map
     const currentPath = activePath in paths ? paths[activePath] : null;
     if (!currentPath) return null;
 
@@ -446,12 +435,10 @@ export const Footer: React.FC<Pick<NavProps, 'sectionRefs'>> = ({sectionRefs}) =
     );
 };
 
-// Main LandingPage Component
 const LandingPage: React.FC = () => {
     useScrollAnimation();
     const [activePath, setActivePath] = useState<AudiencePath>(null);
     
-    // Refs for sections
     const sectionRefs = {
         fleet: useRef<HTMLElement>(null),
         events: useRef<HTMLElement>(null),
@@ -459,7 +446,6 @@ const LandingPage: React.FC = () => {
         quote: useRef<HTMLElement>(null),
     };
     
-    // Handle hash change scrolling on mount or hash change
     useEffect(() => {
         const handleHashScroll = () => {
             const hash = window.location.hash.replace(/^#/, '');
@@ -475,30 +461,10 @@ const LandingPage: React.FC = () => {
 
         handleHashScroll();
     }, []);
-
-    // Load widget script once
-    useEffect(() => {
-        const scriptId = 'mylimobiz-widget-loader';
-        if (!document.getElementById(scriptId)) {
-            try {
-                const script = document.createElement('script');
-                script.id = scriptId;
-                script.src = "https://book.mylimobiz.com/v4/widgets/widget-loader.js";
-                script.type = "text/javascript";
-                script.async = true;
-                script.crossOrigin = "anonymous"; // Try to avoid generic Script Error
-                document.body.appendChild(script);
-            } catch (e) {
-                console.warn("Failed to inject widget script", e);
-            }
-        }
-    }, []);
     
     const handleAudienceSelect = (path: AudiencePath) => {
         setActivePath(path);
-        // Small timeout to allow render
         setTimeout(() => {
-            // Find specific section for audience path if needed, or just scroll to the container
             const element = document.getElementById('audience-paths');
             if(element) {
                 const offset = 100;
